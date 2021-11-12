@@ -1,27 +1,49 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Login from '../views/Login'
+import Home from '../views/Home'
+import FriendChat from '../views/chat/FriendChat'
+import AdminInfo from '../views/AdminInfo'
+import Setting from '../views/Setting'
 
 Vue.use(VueRouter)
 
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+  }
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'login',
+    component: Login,
+    hidden:true
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    children: [{
+      path: '/chat',
+      name: '在线聊天',
+      component:FriendChat
+    }, {
+        path: '/userinfo',
+        name: '个人中心',
+        component:AdminInfo
+      },
+      {
+        path: '/setting',
+        name: '设置',
+        component:Setting
+    }]
   }
+  
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
+  // mode: 'history' //易渲染错误
 })
 
 export default router
